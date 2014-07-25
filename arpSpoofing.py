@@ -9,11 +9,11 @@ class ArpSpoofing(threading.Thread):
 		self.checkPeriod = checkPeriod
 		self.stop = False
 		self.arpRecord = {}
+		self.infoThread = False
 
 	def run(self):
 		"""Aquest mètode arrenca la defença contra atacs de ARP Spoofing. 
 		El mètode s'executa durant el temps que l'usuari ha introduit (activeTime) o fins que el pari."""
-		atac = False
 		tempsPeriode = time.time() + self.checkPeriod
 		while self.stop:
 			if self.activeSec < time.time(): #El temps ha passat el limit
@@ -21,7 +21,7 @@ class ArpSpoofing(threading.Thread):
 
 			if tempsPeriode <= time.time():
 				self.getArpTable()
-				atac = self.checkArpSpoofing()
+				self.infoThread = self.checkArpSpoofing()
 				tempsPeriode = time.time() + self.checkPeriod
 
 	def stopThread(self):
@@ -74,4 +74,7 @@ class ArpSpoofing(threading.Thread):
 
 	def getState(self):
 		return self.stop
+
+	def getInfoThread(self):
+		return self.infoThread
 
