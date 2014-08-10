@@ -8,22 +8,31 @@ class ArpPoisoning(threading.Thread):
 	def __init__(self, activeMin, checkPeriod, ipAddress, mask):
 		self.activeSec = activeMin*60
 		self.checkPeriod = checkPeriod
-		self.infoThread = {} #Diccionari de hosts {192.168.1.1: On, 192.168.1.2: Off}
+		self.infoThread = []
 		self.stop = False
 		self.hostsList = []
 		self.ipAddress = ipAddress
 		self.mask = mask
 		self.netInfo = []
-		record1 = {}
-		record2 = {}
+		self.recordArp1 = {}
+		self.recordArp2 = {}
+		self.recordPing1 = {}
+		self.recordPing2 = {}
 
-	def run(self):
+	def run(self):		
+		self.recordPing1 = self.getPingRecord() #Recollim la informació inicial de l'estat dels hosts amb el ping
+		self.recordArp1 = self.getArpRecord() #Recollim la informació inciial per comparar adreces MAC amb la taula ARP
+
 		tempsPeriode = time.time() + self.checkPeriod
 		while self.stop:
 			if self.activeSec < time.time(): #El temps ha passat el limit
-				netBroreak
+				break
 
 			if tempsPeriode <= time.time():
+				self.recordPing2 = self.getPingRecord()
+				self.recordArp2 = self.getArpRecord()
+
+				self.infoThread = self.checkArpPoisoning()
 				
 				tempsPeriode = time.time() + self.checkPeriod
 
@@ -32,7 +41,7 @@ class ArpPoisoning(threading.Thread):
 		self.stop = True
 
 	def changeMaskFormat(self):
-		"""Aquest mètode donat una mascara (1-32) retorna una llista amnetBro format dotted quad
+		"""Aquest mètode donat una mascara (1-32) retorna una llista amb format dotted quad
 		Ex: si la mascara és de 24 retorna [255,255,255,0]"""
 		maskDottedQuad = []
 		maskInverse = []
@@ -71,7 +80,7 @@ class ArpPoisoning(threading.Thread):
 		return newBinary
 
 	def netInformation(self):
-		"""Aquest mètode donat una adreça (192.168.1.12/24) onetBroté la netID (192.168.1.0)
+		"""Aquest mètode donat una adreça (192.168.1.12/24) obté la netID (192.168.1.0)
 		i l'adreça de netBroroadcast (192.168.1.255)"""
 		maskInfo = self.changeMaskFormat()
 		maskDQ = maskInfo[0]
@@ -135,12 +144,55 @@ class ArpPoisoning(threading.Thread):
 		del self.hostsList[(len(self.hostsList)-1)]
 		del self.hostsList[0]
 
-	def checkHost(self):
-		"""Aquest mètode comprova quins hosts responen a un ping donada
-		la llista de hosts de la xarxa"""
+	def getArpRecord(self):
+		"""Aquest mètode retorna la taula ARP"""
+		arpTable = {}
+		commandInp = subprocess.Popen(["ip", "n", "s"], stdout=subprocess.PIPE)
+		commandOut = commandInp.communicate()[0]
 
-		return True
+		#Modifiquem el resultat de la comanda per poder introdur en un diccionari.
+		split1 = commandOut.split('\n')
+		split1.remove('')
 
+		for line in split1:
+			split2 = line.split(' ')
+			ip = split2[0]
+			mac = split2[4]
+			arpTable[ip] = mac
+
+		return arpTable
+
+	def getPingRecord(self):
+		pingTable = {}
+
+		for addr in self.hostsList:
+			commandInp = subprocess.Popen(["ping", addr, "-c 1"], stdout=subprocess.PIPE)
+			commandOut = commandInp.communicate()[0]
+			splitOut = commandOut.split(' ')
+
+			for i in splitOut:
+				if i == '100%':
+					pingTable[addr] = "OFF"
+				else:
+					pingTable[addr] = "ON"
+
+		return pingTable
+
+	def checkArpPoisoning(self):
+		"""Aquest mètode comprova si hi ha algun host de la subxarxa que no respongui"""
+		#Per a saber si no pot haver communicació amb un host primer es comproba els recordPing (si canvia l'estat de l'anterior record de ON-->OFF)
+		#En cas que canvii l'estat es mira si la adreça MAC ha canviat per a saber si s'ha fet l'atac.
+		#ATENCIÓ: Aquest atac no es detecta si l'atac ja estava operatiu abans d'activar la protecció.
+
+		hostInfo = []
+
+		for rp in self.recordPing1:
+			if(self.recordPing1[rp] == "ON" and self.recordPing2[rp] == "OFF"):
+				if(self.recordArp1[rp] != self.recordArp2[rp]):
+					info = [rp, self.recordArp1[rp], self.recordArp2[rp]]
+					hostInfo.append(info)
+
+		return hostInfo
 
 	"""Getters/Setters"""
 	def getState(self):
@@ -155,6 +207,20 @@ class ArpPoisoning(threading.Thread):
 	def getHostsList(self):
 		return self.hostsList
 
+	def getNetInfo(self):
+		return self.getNetInfo
 
+	def setNetInfo(self, netInfo):
+		self.netInfo = netInfo
 
+	def getRecordArpRecord1(self):
+		return self.recordArp1
 
+	def setRecordArpRecord1(self, arpRecord):
+		self.recordArp1 = arpRecord
+
+	def getRecordArpRecord2(self):
+		return self.recordArp2
+
+	def setRecordArpRecord2(self, arpRecord):
+		self.recordArp2 = arpRecord

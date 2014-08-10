@@ -7,9 +7,9 @@ class ArpSpoofing(threading.Thread):
 	def __init__(self, activeMin, checkPeriod):
 		self.activeSec = activeMin*60 #Es multiplica per 60 per passar de minuts a segons.
 		self.checkPeriod = checkPeriod
-		self.stop = False
+		self.stop = True
 		self.arpRecord = {}
-		self.infoThread = False
+		self.infoThread = []
 
 	def run(self):
 		"""Aquest mètode arrenca la defença contra atacs de ARP Spoofing. 
@@ -45,13 +45,14 @@ class ArpSpoofing(threading.Thread):
 
 	def checkArpSpoofing(self):
 		"""Aquest mètode comproba si hi ha un possible atac utilitzant el diccionari"""
-		trobat = False
+		hostInfo = []
 		for x in self.arpRecord:
 			for y in self.arpRecord:
 				if((y is not x) and (self.arpRecord[x] == self.arpRecord[y])):
-					trobat = True
+					info = [x, y, self.arpRecord[x]]
+					hostInfo.append(info)
 		
-		return trobat
+		return hostInfo
 
 	"""Getters/Setters"""
 	def setArpRecord(self, arpRecord):
