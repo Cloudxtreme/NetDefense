@@ -162,7 +162,10 @@ class ArpPoisoning(threading.Thread):
 
 		return arpTable
 
+	#ATENCIÓ: Mètode poc eficient, cal millorar la velocitat amb que fer ping.
 	def getPingRecord(self):
+		"""Aquest mètode ping a cada host de la xarxa i retorna un diccionari que 
+		indica l'estat de cada host (ON/OFF)"""
 		pingTable = {}
 
 		for addr in self.hostsList:
@@ -170,10 +173,9 @@ class ArpPoisoning(threading.Thread):
 			commandOut = commandInp.communicate()[0]
 			splitOut = commandOut.split(' ')
 
-			for i in splitOut:
-				if i == '100%':
+			if('100%' in splitOut):
 					pingTable[addr] = "OFF"
-				else:
+			else:
 					pingTable[addr] = "ON"
 
 		return pingTable
@@ -183,7 +185,6 @@ class ArpPoisoning(threading.Thread):
 		#Per a saber si no pot haver communicació amb un host primer es comproba els recordPing (si canvia l'estat de l'anterior record de ON-->OFF)
 		#En cas que canvii l'estat es mira si la adreça MAC ha canviat per a saber si s'ha fet l'atac.
 		#ATENCIÓ: Aquest atac no es detecta si l'atac ja estava operatiu abans d'activar la protecció.
-
 		hostInfo = []
 
 		for rp in self.recordPing1:
@@ -207,20 +208,35 @@ class ArpPoisoning(threading.Thread):
 	def getHostsList(self):
 		return self.hostsList
 
+	def setHostsList(self, hostsList):
+		self.hostsList = hostsList
+
 	def getNetInfo(self):
-		return self.getNetInfo
+		return self.netInfo
 
 	def setNetInfo(self, netInfo):
 		self.netInfo = netInfo
 
-	def getRecordArpRecord1(self):
+	def getRecordArp1(self):
 		return self.recordArp1
 
-	def setRecordArpRecord1(self, arpRecord):
+	def setRecordArp1(self, arpRecord):
 		self.recordArp1 = arpRecord
 
-	def getRecordArpRecord2(self):
+	def getRecordArp2(self):
 		return self.recordArp2
 
-	def setRecordArpRecord2(self, arpRecord):
+	def setRecordArp2(self, arpRecord):
 		self.recordArp2 = arpRecord
+
+	def getRecordPing1(self):
+		return self.recordPing1
+
+	def setRecordPing1(self, recordPing):
+		self.recordPing1 = recordPing
+
+	def getRecordPing2(self):
+		return self.recordPing2
+
+	def setRecordPing2(self, recordPing):
+		self.recordPing2 = recordPing
