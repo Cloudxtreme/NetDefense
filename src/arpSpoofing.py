@@ -5,8 +5,8 @@ import time
 
 class ArpSpoofing(threading.Thread):
 	def __init__(self, activeMin, checkPeriod):
-		self.activeSec = activeMin*60 #Es multiplica per 60 per passar de minuts a segons.
-		self.checkPeriod = checkPeriod
+		self.activeSec = activeMin * 60 #Es multiplica per 60 per passar de minuts a segons.
+		self.checkPeriod = checkPeriod * 60
 		self.stop = True
 		self.arpRecord = {}
 		self.infoThread = []
@@ -26,7 +26,7 @@ class ArpSpoofing(threading.Thread):
 
 	def stopThread(self):
 		"""Aquest mètode atura la defença contra atacs de ARP Spoofing"""
-		self.stop = True
+		self.stop = False
 
 	def getArpTable(self):
 		"""Aquest mètode s'utilitza per obtenir la taula ARP"""
