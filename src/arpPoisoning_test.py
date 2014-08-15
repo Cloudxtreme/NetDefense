@@ -8,9 +8,9 @@ MASK = 24
 test = ArpPoisoning(ACTIVE_MIN, CHECK_PERIOD, IP_ADDRESS, MASK)
 
 def stopThread_test():	
-	assert(test.getState() == False)
-	test.stopThread()
 	assert(test.getState() == True)
+	test.stopThread()
+	assert(test.getState() == False)
 
 #stopThread_test()
 

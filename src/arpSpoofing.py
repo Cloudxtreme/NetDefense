@@ -6,14 +6,15 @@ import time
 class ArpSpoofing(threading.Thread):
 	def __init__(self, activeMin, checkPeriod):
 		self.activeSec = activeMin * 60 #Es multiplica per 60 per passar de minuts a segons.
-		self.checkPeriod = checkPeriod * 60
+		self.checkPeriod = checkPeriod
 		self.stop = True
 		self.arpRecord = {}
 		self.infoThread = []
 
 	def run(self):
 		"""Aquest mètode arrenca la defença contra atacs de ARP Spoofing. 
-		El mètode s'executa durant el temps que l'usuari ha introduit (activeTime) o fins que el pari."""
+		El mètode s'executa durant el temps que l'usuari ha introduit (activeTime) 
+		o fins que el pari."""
 		tempsPeriode = time.time() + self.checkPeriod
 		while self.stop:
 			if self.activeSec < time.time(): #El temps ha passat el limit
@@ -44,7 +45,7 @@ class ArpSpoofing(threading.Thread):
 			self.arpRecord[ip] = mac
 
 	def checkArpSpoofing(self):
-		"""Aquest mètode comproba si hi ha un possible atac utilitzant el diccionari"""
+		"""Aquest mètode comprova si hi ha un possible atac d'ARP Spoofing"""
 		hostInfo = []
 		for x in self.arpRecord:
 			for y in self.arpRecord:

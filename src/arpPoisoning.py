@@ -7,9 +7,9 @@ import os
 class ArpPoisoning(threading.Thread):
 	def __init__(self, activeMin, checkPeriod, ipAddress, mask):
 		self.activeSec = activeMin * 60
-		self.checkPeriod = checkPeriod * 60
+		self.checkPeriod = checkPeriod
 		self.infoThread = []
-		self.stop = False
+		self.stop = True
 		self.hostsList = []
 		self.ipAddress = ipAddress
 		self.mask = mask
@@ -240,3 +240,6 @@ class ArpPoisoning(threading.Thread):
 
 	def setRecordPing2(self, recordPing):
 		self.recordPing2 = recordPing
+
+	def getInfoThread(self):
+		return self.infoThread
