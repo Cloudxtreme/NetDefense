@@ -6,8 +6,8 @@ import os
 
 class ArpPoisoning(threading.Thread):
 	def __init__(self, activeMin, checkPeriod, ipAddress, mask):
-		self.activeSec = activeMin*60
-		self.checkPeriod = checkPeriod
+		self.activeSec = activeMin * 60
+		self.checkPeriod = checkPeriod * 60
 		self.infoThread = []
 		self.stop = False
 		self.hostsList = []
@@ -38,7 +38,7 @@ class ArpPoisoning(threading.Thread):
 
 	def stopThread(self):
 		"""Aquest mètode atura la defença contra atacs de ARP Poisoning"""
-		self.stop = True
+		self.stop = False
 
 	def changeMaskFormat(self):
 		"""Aquest mètode donat una mascara (1-32) retorna una llista amb format dotted quad
