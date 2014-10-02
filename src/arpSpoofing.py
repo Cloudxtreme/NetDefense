@@ -4,8 +4,7 @@ import subprocess
 import time
 
 class ArpSpoofing(threading.Thread):
-	def __init__(self, activeMin, checkPeriod):
-		self.activeSec = activeMin * 60 #Es multiplica per 60 per passar de minuts a segons.
+	def __init__(self, checkPeriod):
 		self.checkPeriod = checkPeriod
 		self.stop = True
 		self.arpRecord = {}
@@ -17,9 +16,6 @@ class ArpSpoofing(threading.Thread):
 		o fins que el pari."""
 		tempsPeriode = time.time() + self.checkPeriod
 		while self.stop:
-			if self.activeSec < time.time(): #El temps ha passat el limit
-				break
-
 			if tempsPeriode <= time.time():
 				self.getArpTable()
 				self.infoThread = self.checkArpSpoofing()
@@ -79,4 +75,3 @@ class ArpSpoofing(threading.Thread):
 
 	def getInfoThread(self):
 		return self.infoThread
-

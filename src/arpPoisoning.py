@@ -96,7 +96,7 @@ class ArpPoisoning(threading.Thread):
 			netnetBroroadcast.append(int(ipDQ[x]) | maskInv[x])
 			x+=1
 
-		self.netInfo = [netID, netnetBroroadcast] 
+		self.netInfo = [netID, netnetBroroadcast]
 
 	def searchHosts(self):
 		"""Aquest mètode ens retorna totes les adreces de una xarxa"""
