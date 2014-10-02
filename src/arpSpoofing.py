@@ -58,12 +58,6 @@ class ArpSpoofing(threading.Thread):
 	def getArpRecord(self):
 		return self.arpRecord
 
-	def setActiveSec(self, activeMin):
-		self.activeSec = activeMin * 60
-
-	def getActiveSec(self):
-		return self.activeSec
-
 	def setCheckPeriod(self, checkPeriod):
 		self.checkPeriod = checkPeriod
 
