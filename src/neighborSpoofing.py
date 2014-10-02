@@ -4,8 +4,7 @@ import subprocess
 import time
 
 class NeighborSpoofing(threading.Thread):
-	def __init__(self, activeMin, checkPeriod):
-		self.activeSec = activeMin * 60
+	def __init__(self, checkPeriod):
 		self.checkPeriod = checkPeriod
 		self.stop = True
 		self.neighborRecord = {}
@@ -17,9 +16,6 @@ class NeighborSpoofing(threading.Thread):
 		o fins que el pari."""
 		tempsPeriode = time.time() + self.checkPeriod
 		while self.stop:
-			if self.activeSec < time.time(): #El temps ha passat el limit
-				break
-
 			if tempsPeriode <= time.time():
 				self.getNeighborTable()
 				self.infoThread = self.checkNeighborSpoofing()
@@ -56,12 +52,6 @@ class NeighborSpoofing(threading.Thread):
 		return hostInfo
 
 	"""Getters/Setters"""
-	def getActiveSec(self):
-		return self.activeSec
-
-	def setActiveSec(self, activeMin):
-		self.activeSec = activeMin * 60
-
 	def getCheckPeriod(self):
 		return self.checkPeriod
 
