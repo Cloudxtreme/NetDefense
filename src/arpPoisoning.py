@@ -5,8 +5,7 @@ import time
 import os
 
 class ArpPoisoning(threading.Thread):
-	def __init__(self, activeMin, checkPeriod, ipAddress, mask):
-		self.activeSec = activeMin * 60
+	def __init__(self, checkPeriod, ipAddress, mask):
 		self.checkPeriod = checkPeriod
 		self.infoThread = []
 		self.stop = True
@@ -25,9 +24,6 @@ class ArpPoisoning(threading.Thread):
 
 		tempsPeriode = time.time() + self.checkPeriod
 		while self.stop:
-			if self.activeSec < time.time(): #El temps ha passat el limit
-				break
-
 			if tempsPeriode <= time.time():
 				self.recordPing2 = self.getPingRecord()
 				self.recordArp2 = self.getArpRecord()
