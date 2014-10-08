@@ -4,25 +4,27 @@ import subprocess
 import time
 import os
 
+
 class ArpPoisoning(threading.Thread):
-	def __init__(self, checkPeriod, ipAddress, mask):
-		self.checkPeriod = checkPeriod
-		self.infoThread = []
-		self.stop = True
-		self.hostsList = []
-		self.ipAddress = ipAddress
-		self.mask = mask
-		self.netInfo = []
-		self.recordArp1 = {}
-		self.recordArp2 = {}
-		self.recordPing1 = {}
-		self.recordPing2 = {}
+    def __init__(self, checkPeriod, ipAddress, mask):
+        super(ArpPoisoning, self).__init__()
+        self.checkPeriod = checkPeriod
+        self.infoThread = []
+        self.stop = True
+        self.hostsList = []
+        self.ipAddress = ipAddress
+        self.mask = mask
+        self.netInfo = []
+        self.recordArp1 = {}
+        self.recordArp2 = {}
+        self.recordPing1 = {}
+        self.recordPing2 = {}
 
-	def run(self):		
-		self.recordPing1 = self.getPingRecord() #Recollim la informació inicial de l'estat dels hosts amb el ping
-		self.recordArp1 = self.getArpRecord() #Recollim la informació inciial per comparar adreces MAC amb la taula ARP
+    def run(self):
+        self.recordPing1 = self.getPingRecord()  #Recollim la informació inicial de l'estat dels hosts amb el ping
+        self.recordArp1 = self.getArpRecord()  #Recollim la informació inciial per comparar adreces MAC amb la taula ARP
 
-		tempsPeriode = time.time() + self.checkPeriod
+        tempsPeriode = time.time() + self.checkPeriod
 		while self.stop:
 			if tempsPeriode <= time.time():
 				self.recordPing2 = self.getPingRecord()
